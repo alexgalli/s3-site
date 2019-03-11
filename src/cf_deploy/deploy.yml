@@ -1,0 +1,15 @@
+Parameters:
+  SiteName:
+    Type: String
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - prod
+
+Resources:
+  # s3
+  S3DeployBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join ['-', [!Ref SiteName, !Ref Environment, 'deploy']]

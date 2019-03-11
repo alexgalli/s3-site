@@ -1,0 +1,60 @@
+Parameters:
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - prod
+  SiteName:
+    Type: String
+  HostedZone:
+    Type: String
+  CertificateArn:
+    Type: String
+  S3Website:
+    Type: String
+  S3HostedZone:
+    Type: String
+
+Mappings:
+  URLMap:
+    dev:
+      S3DeployBucket: alexgalli-dev-deploy
+      URL: !Join ['.', [!Ref Environment, !Ref HostedZone]]
+    prod:
+      S3DeployBucket: alexgalli-prod-deploy
+      URL: !Ref HostedZone
+
+Resources:
+  # s3
+  S3BucketSite:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !FindInMap [URLMap, !Ref Environment, URL]
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+  S3BucketSitePolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketSite
+      PolicyDocument:
+        Statement:
+        - Action:
+          - s3:GetObject
+          Effect: Allow
+          Principal: "*"
+          Resource: !Join ['', [!GetAtt S3BucketSite.Arn, '/*']]
+
+  # dns
+  DNSRecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      RecordSets:
+      - Name: !FindInMap [URLMap, !Ref Environment, URL]
+        Type: A
+        AliasTarget:
+          HostedZoneId: !FindInMap [URLMap, !Ref Environment, S3HostedZone]
+          DNSName: !FindInMap [URLMap, !Ref Environment, S3Website]
+    
