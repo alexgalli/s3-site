@@ -37,13 +37,17 @@ if [[ $CREATE == '--create' ]]; then
     ParameterKey=SiteName,ParameterValue=$SITENAME \
     ParameterKey=Environment,ParameterValue=$ENV \
     ParameterKey=CertificateArn,ParameterValue=$CERTIFICATEARN \
-    ParameterKey=HostedZone,ParameterValue=$HOSTEDZONE
+    ParameterKey=HostedZone,ParameterValue=$HOSTEDZONE \
+    ParameterKey=S3Website,ParameterValue=$S3WEBSITE \
+    ParameterKey=S3HostedZone,ParameterValue=$S3HOSTEDZONE
 else
     aws cloudformation update-stack --stack-name $STACKNAME --template-body file://cloudformation-packaged.yml --capabilities CAPABILITY_IAM --parameters \
     ParameterKey=SiteName,ParameterValue=$SITENAME \
     ParameterKey=Environment,ParameterValue=$ENV \
     ParameterKey=CertificateArn,ParameterValue=$CERTIFICATEARN \
-    ParameterKey=HostedZone,ParameterValue=$HOSTEDZONE
+    ParameterKey=HostedZone,ParameterValue=$HOSTEDZONE \
+    ParameterKey=S3Website,ParameterValue=$S3WEBSITE \
+    ParameterKey=S3HostedZone,ParameterValue=$S3HOSTEDZONE
 fi
 
 # clean up package

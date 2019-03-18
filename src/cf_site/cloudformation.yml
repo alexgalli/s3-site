@@ -15,21 +15,15 @@ Parameters:
   S3HostedZone:
     Type: String
 
-Mappings:
-  URLMap:
-    dev:
-      S3DeployBucket: alexgalli-dev-deploy
-      URL: !Join ['.', [!Ref Environment, !Ref HostedZone]]
-    prod:
-      S3DeployBucket: alexgalli-prod-deploy
-      URL: !Ref HostedZone
+Conditions:
+    IsDev: !Equals [!Ref Environment, 'dev']
 
 Resources:
   # s3
   S3BucketSite:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !FindInMap [URLMap, !Ref Environment, URL]
+      BucketName: !If [IsDev, !Join ['.', ['dev', !Ref HostedZone]], !Ref HostedZone]
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
@@ -50,11 +44,11 @@ Resources:
   DNSRecordSetGroup:
     Type: AWS::Route53::RecordSetGroup
     Properties:
-      HostedZoneName: !Ref HostedZone
+      HostedZoneName: !Join ['', [!Ref HostedZone, '.']]
       RecordSets:
-      - Name: !FindInMap [URLMap, !Ref Environment, URL]
+      - Name: !If [IsDev, !Join ['.', ['dev', !Ref HostedZone]], !Ref HostedZone]
         Type: A
         AliasTarget:
-          HostedZoneId: !FindInMap [URLMap, !Ref Environment, S3HostedZone]
-          DNSName: !FindInMap [URLMap, !Ref Environment, S3Website]
+          HostedZoneId: !Ref S3HostedZone
+          DNSName: !Ref S3Website
     
