@@ -1,6 +1,7 @@
 site:
   name: sample
-  hosted-zone: sample.com
-  certificate-arn: arn::sample
-  s3-website: s3-website-us-west-2.amazonaws.com
-  s3-hosted-zone: Z3BJ6K6RIION7M
+  hosted_zone: sample.com
+  certificate_arn: arn:aws:acm:us-west-2:123:certificate/asdf
+  s3_website: s3_website_us_west_2.amazonaws.com
+  s3_hosted_zone: Z3BJ6K6RIION7M
+  file_path: example-site/
